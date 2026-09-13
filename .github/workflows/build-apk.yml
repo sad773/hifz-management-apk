@@ -18,8 +18,10 @@ jobs:
         with:
           node-version: 20
 
-      - name: Install dependencies
-        run: npm install
+      - name: Initialize project & install Capacitor
+        run: |
+          npm init -y
+          npm install @capacitor/core @capacitor/cli @capacitor/android
 
       - name: Add Android platform
         run: npx cap add android
