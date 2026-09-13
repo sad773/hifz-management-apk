@@ -18,10 +18,11 @@ jobs:
         with:
           node-version: 20
 
-      - name: Initialize project & install Capacitor
+      - name: Initialize project & Capacitor
         run: |
           npm init -y
           npm install @capacitor/core @capacitor/cli @capacitor/android
+          npx cap init "Hifz Management" "com.hifz.management" --web-dir .
 
       - name: Add Android platform
         run: npx cap add android
