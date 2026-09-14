@@ -67,6 +67,8 @@ jobs:
 
           test -f www/index.html
 
+          echo "index.html is ready."
+
       # 5. إنشاء package.json
       - name: Create package.json
         run: |
@@ -81,7 +83,7 @@ jobs:
             },
             "devDependencies": {
               "@capacitor/cli": "^8.0.0",
-              "@capacitor/assets": "^3.0.14",
+              "@capacitor/assets": "^3.0.5",
               "typescript": "^5.9.0"
             }
           }
@@ -111,7 +113,7 @@ jobs:
       - name: Add Android platform
         run: npx cap add android
 
-      # 9. إنشاء أيقونة التطبيق من شعار الملتقى
+      # 9. إنشاء أيقونة Android من شعار الملتقى
       - name: Generate Android app icon
         run: |
           npx @capacitor/assets generate \
@@ -119,7 +121,7 @@ jobs:
             --iconBackgroundColor "#ffffff" \
             --iconBackgroundColorDark "#ffffff"
 
-      # 10. مزامنة ملفات التطبيق
+      # 10. مزامنة التطبيق
       - name: Sync web assets
         run: npx cap sync android
 
