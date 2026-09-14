@@ -19,17 +19,35 @@ jobs:
           node-version: 20
           package-manager-cache: false
 
-      - name: Verify web app
+      - name: Prepare web app
         run: |
-          echo "Current directory:"
-          pwd
           echo "Repository files:"
           ls -la
-          echo "www directory:"
+
+          mkdir -p www
+
+          echo "Searching for HTML file..."
+          HTML_FILE=$(find . -type f -name "*.html" -not -path "./.git/*" | head -n 1)
+
+          if [ -z "$HTML_FILE" ]; then
+            echo "ERROR: No HTML file was found."
+            echo "Files in repository:"
+            find . -maxdepth 3 -type f | head -n 100
+            exit 1
+          fi
+
+          echo "HTML file found:"
+          echo "$HTML_FILE"
+
+          if [ "$HTML_FILE" != "./www/index.html" ]; then
+            cp "$HTML_FILE" www/index.html
+          fi
+
+          echo "Final web assets:"
           ls -la www
-          echo "Checking index.html:"
+
           test -f www/index.html
-          echo "index.html found successfully."
+          echo "index.html is ready."
 
       - name: Create package.json
         run: |
