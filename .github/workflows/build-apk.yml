@@ -17,17 +17,54 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 20
+          package-manager-cache: false
 
-      - name: Prepare web assets
+      - name: Verify web app
         run: |
-          mkdir -p www
-          find . -maxdepth 1 ! -name www ! -name .git ! -name .github ! -name . -exec cp -r {} www/ \;
+          echo "Current directory:"
+          pwd
+          echo "Repository files:"
+          ls -la
+          echo "www directory:"
+          ls -la www
+          echo "Checking index.html:"
+          test -f www/index.html
+          echo "index.html found successfully."
 
-      - name: Initialize project & Capacitor
+      - name: Create package.json
         run: |
-          npm init -y
-          npm install @capacitor/core @capacitor/cli @capacitor/android
-          npx cap init "Hifz Management" "com.hifz.management" --web-dir www
+          cat > package.json <<'EOF'
+          {
+            "name": "hifz-management-app",
+            "version": "1.0.0",
+            "private": true,
+            "dependencies": {
+              "@capacitor/android": "^8.0.0",
+              "@capacitor/core": "^8.0.0"
+            },
+            "devDependencies": {
+              "@capacitor/cli": "^8.0.0"
+            }
+          }
+          EOF
+
+      - name: Install Capacitor
+        run: npm install
+
+      - name: Create Capacitor config
+        run: |
+          cat > capacitor.config.ts <<'EOF'
+          import type { CapacitorConfig } from '@capacitor/cli';
+
+          const config: CapacitorConfig = {
+            appId: 'com.hifz.management',
+            appName: 'إدارة حلقات التحفيظ',
+            webDir: 'www',
+            bundledWebRuntime: false
+          };
+
+          export default config;
+          EOF
 
       - name: Add Android platform
         run: npx cap add android
