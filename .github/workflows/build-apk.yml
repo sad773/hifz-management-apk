@@ -61,7 +61,8 @@ jobs:
               "@capacitor/core": "^8.0.0"
             },
             "devDependencies": {
-              "@capacitor/cli": "^8.0.0"
+              "@capacitor/cli": "^8.0.0",
+              "typescript": "^5.9.0"
             }
           }
           EOF
