@@ -10,15 +10,19 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+
+      # 1. تحميل ملفات المشروع
       - name: Checkout
         uses: actions/checkout@v4
 
+      # 2. إعداد Node.js
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
           node-version: 22
           package-manager-cache: false
 
+      # 3. تجهيز ملف التطبيق
       - name: Prepare web app
         run: |
           echo "Repository files:"
@@ -27,6 +31,7 @@ jobs:
           mkdir -p www
 
           echo "Searching for HTML file..."
+
           HTML_FILE=$(find . -type f -name "*.html" -not -path "./.git/*" | head -n 1)
 
           if [ -z "$HTML_FILE" ]; then
@@ -47,8 +52,10 @@ jobs:
           ls -la www
 
           test -f www/index.html
+
           echo "index.html is ready."
 
+      # 4. إنشاء package.json
       - name: Create package.json
         run: |
           cat > package.json <<'EOF'
@@ -67,9 +74,11 @@ jobs:
           }
           EOF
 
+      # 5. تثبيت Capacitor
       - name: Install Capacitor
         run: npm install
 
+      # 6. إنشاء إعدادات Capacitor
       - name: Create Capacitor config
         run: |
           cat > capacitor.config.ts <<'EOF'
@@ -85,27 +94,45 @@ jobs:
           export default config;
           EOF
 
+      # 7. إضافة Android
       - name: Add Android platform
         run: npx cap add android
 
+      # 8. مزامنة ملفات التطبيق
       - name: Sync web assets
         run: npx cap sync android
 
+      # 9. إعداد Java
       - name: Setup Java
         uses: actions/setup-java@v4
         with:
           distribution: temurin
           java-version: '21'
 
+      # 10. إعداد Android SDK
       - name: Setup Android SDK
-        uses: android-actions/setup-android@v3
+        uses: android-actions/setup-android@v4
+        with:
+          packages: ''
 
+      # 11. تثبيت حزم Android المطلوبة
+      - name: Install Android SDK packages
+        run: |
+          yes | sdkmanager --licenses >/dev/null || true
+
+          sdkmanager --install \
+            "platform-tools" \
+            "platforms;android-36" \
+            "build-tools;36.0.0"
+
+      # 12. بناء APK
       - name: Build debug APK
         working-directory: android
         run: |
           chmod +x gradlew
           ./gradlew assembleDebug
 
+      # 13. رفع APK
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
